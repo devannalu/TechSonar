@@ -16,3 +16,10 @@ Regras de negócio oficiais do TechSonar.
 10. Pagamentos devem ser processados pelo backend usando Pagar.me.
 11. A chave secreta do Pagar.me nunca deve ficar no app mobile.
 12. Notificações serão enviadas via Firebase Cloud Messaging.
+13. O slug de um evento deve ser único dentro do mesmo Perfil Organizador.
+14. Eventos do formato PRESENCIAL precisam obrigatoriamente de cidade, estado e local físico.
+15. Eventos do formato ONLINE precisam obrigatoriamente de uma URL de transmissão ativa.
+16. Eventos do formato HÍBRIDO precisam tanto de localização física quanto de URL de transmissão.
+17. Se o evento for gratuito (isFree = true), o preço deve obrigatoriamente ser zero. Se possuir preço maior que zero, o evento é classificado como pago (isFree = false).
+18. A exclusão de um evento é sempre lógica (preenchendo a data em `deletedAt` e alterando o status para `ARCHIVED`) para fins de preservação de histórico.
+19. Apenas membros ativos do organizador com papéis de OWNER, ADMIN ou EVENT_MANAGER podem criar, editar ou publicar eventos. A exclusão ou cancelamento é restrito a OWNER e ADMIN.

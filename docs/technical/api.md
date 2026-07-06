@@ -347,9 +347,117 @@ Authorization: Bearer <accessToken>
 
 ---
 
+## Rotas de Eventos
+
+### 1. Criar Evento (`POST /events`)
+Cria um novo evento no estado de rascunho (`DRAFT`). Exige que o usuário autenticado seja membro ativo do Perfil Organizador com papel `OWNER`, `ADMIN` ou `EVENT_MANAGER`.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+- **Request Body**:
+```json
+{
+  "organizerProfileId": "7ca6479f-6825-4c07-b353-066cb5dcf54a",
+  "title": "Tech Girls Night",
+  "description": "Evento de lançamento da comunidade Tech Sisters.",
+  "category": "Comunidade",
+  "format": "ONLINE",
+  "startDateTime": "2026-07-24T20:00:00.000Z",
+  "endDateTime": "2026-07-24T22:00:00.000Z",
+  "timezone": "America/Bahia",
+  "onlineUrl": "https://youtube.com/live/exemplo",
+  "capacity": 500,
+  "isFree": true,
+  "price": 0
+}
+```
+- **Exemplo de Response (201 Created)**:
+```json
+{
+  "id": "e88a0322-8ce8-4ca4-bf4b-e85dcf54aef9",
+  "organizerProfileId": "7ca6479f-6825-4c07-b353-066cb5dcf54a",
+  "title": "Tech Girls Night",
+  "slug": "tech-girls-night",
+  "description": "Evento de lançamento da comunidade Tech Sisters.",
+  "category": "Comunidade",
+  "format": "ONLINE",
+  "status": "DRAFT",
+  "startDateTime": "2026-07-24T20:00:00.000Z",
+  "endDateTime": "2026-07-24T22:00:00.000Z",
+  "timezone": "America/Bahia",
+  "capacity": 500,
+  "availableSpots": 500,
+  "price": "0.00",
+  "isFree": true,
+  "hasCertificate": true,
+  "createdAt": "2026-07-06T14:40:00.000Z"
+}
+```
+
+### 2. Listar Eventos Públicos (`GET /events`)
+Lista todos os eventos com status `PUBLISHED` e que não estejam deletados. Permite filtros e paginação. Rota pública.
+- **Request Query**:
+`page=1&limit=10&format=ONLINE&isFree=true`
+- **Exemplo de Response (200 OK)**:
+```json
+{
+  "data": [
+    {
+      "id": "e88a0322-8ce8-4ca4-bf4b-e85dcf54aef9",
+      "title": "Tech Girls Night",
+      "slug": "tech-girls-night",
+      "format": "ONLINE",
+      "status": "PUBLISHED",
+      "startDateTime": "2026-07-24T20:00:00.000Z",
+      "isFree": true,
+      "organizerProfile": {
+        "id": "7ca6479f-6825-4c07-b353-066cb5dcf54a",
+        "name": "Tech Sisters",
+        "slug": "tech-sisters",
+        "type": "COMMUNITY"
+      }
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 10,
+    "total": 1,
+    "totalPages": 1
+  }
+}
+```
+
+### 3. Detalhes Públicos de um Evento (`GET /events/:id`)
+Retorna os detalhes completos de um evento publicado. Rota pública.
+
+### 4. Eventos do Organizador (`GET /events/organizer/:organizerProfileId`)
+Lista todos os eventos de um organizador (incluindo DRAFT, CANCELED, etc.) para o painel administrativo. Exige que o usuário seja membro do organizador.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+
+### 5. Atualizar Evento (`PATCH /events/:id`)
+Edita dados de um evento não deletado. Exige papel `OWNER`, `ADMIN` ou `EVENT_MANAGER`.
+
+### 6. Publicar Evento (`PATCH /events/:id/publish`)
+Muda o status do evento para `PUBLISHED`. Valida regras e campos mínimos antes da publicação. Exige papel `OWNER`, `ADMIN` ou `EVENT_MANAGER`.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+
+### 7. Cancelar Evento (`PATCH /events/:id/cancel`)
+Altera o status do evento para `CANCELED`. Exige ser `OWNER` ou `ADMIN` do Perfil Organizador.
+
+### 8. Excluir Evento (`DELETE /events/:id`)
+Realiza exclusão lógica preenchendo o `deletedAt` e mudando o status para `ARCHIVED`. Exige ser `OWNER` ou `ADMIN` do organizador.
+
+---
+
 ## Outros Módulos Planejados
 
-- **Events** (Publicação e gerenciamento de eventos)
 - **Registrations** (Inscrições de participantes)
 - **Payments** (Processamento de pagamentos via Pagar.me)
 - **Check-ins** (Validação via QR Code)

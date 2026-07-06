@@ -158,14 +158,27 @@ Permite criar e gerenciar Perfis Organizadores de eventos.
 - `PATCH /organizer-profiles/:id` — Editar Perfil Organizador (exige ser OWNER ou ADMIN do perfil)
 - `DELETE /organizer-profiles/:id` — Exclusão lógica do Perfil Organizador (exige ser OWNER do perfil)
 
+## Events
+
+Permite gerenciar eventos de tecnologia.
+
+### Rotas disponíveis
+- `POST /events` — Criar evento em rascunho (exige permissão OWNER, ADMIN ou EVENT_MANAGER)
+- `GET /events` — Listar eventos publicados (público, com paginação e filtros)
+- `GET /events/:id` — Detalhes públicos de um evento pelo ID (público)
+- `GET /events/organizer/:organizerProfileId` — Listar todos os eventos (qualquer status) de um organizador (exige ser membro do perfil)
+- `PATCH /events/:id` — Editar dados de um evento (exige OWNER, ADMIN ou EVENT_MANAGER)
+- `PATCH /events/:id/publish` — Publicar um evento (exige OWNER, ADMIN ou EVENT_MANAGER e valida campos mínimos)
+- `PATCH /events/:id/cancel` — Cancelar um evento (exige OWNER ou ADMIN)
+- `DELETE /events/:id` — Exclusão lógica do evento (exige OWNER ou ADMIN)
+
 Para mais detalhes e exemplos, veja a documentação de [API](../../docs/technical/api.md).
 
 ## Próximos módulos
 
-1. Eventos (CRUD, publicação, busca)
-2. Inscrições (inscrição, cancelamento)
-3. Pagamentos (integração Pagar.me)
-4. Check-ins (QR Code, validação)
-5. Feedbacks (avaliação pós-evento)
-6. Certificados (geração, download)
-7. Notificações (push via FCM)
+1. Inscrições (inscrição, cancelamento)
+2. Pagamentos (integração Pagar.me)
+3. Check-ins (QR Code, validação)
+4. Feedbacks (avaliação pós-evento)
+5. Certificados (geração, download)
+6. Notificações (push via FCM)
