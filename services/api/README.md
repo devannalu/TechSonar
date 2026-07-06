@@ -137,14 +137,23 @@ A autenticação real está implementada via JWT com Access Token e Refresh Toke
 
 Para mais detalhes e exemplos, veja a documentação de [API](../../docs/technical/api.md).
 
+## Users/Profile
+
+Permite ao usuário autenticado obter e gerenciar seus próprios dados.
+
+### Rotas disponíveis
+- `GET /users/me` — Obter perfil completo do usuário autenticado
+- `PATCH /users/me/profile` — Editar campos do perfil (`UserProfile`)
+- `PATCH /users/me/account` — Editar dados básicos da conta (`User`)
+- `DELETE /users/me` — Exclusão lógica da conta
+
 ## Próximos módulos
 
-1. Usuários (perfil, configurações)
-3. Perfis Organizadores (CRUD, membros, permissões)
-4. Eventos (CRUD, publicação, busca)
-5. Inscrições (inscrição, cancelamento)
-6. Pagamentos (integração Pagar.me)
-7. Check-ins (QR Code, validação)
-8. Feedbacks (avaliação pós-evento)
-9. Certificados (geração, download)
-10. Notificações (push via FCM)
+1. Perfis Organizadores (CRUD, membros, permissões)
+2. Eventos (CRUD, publicação, busca)
+3. Inscrições (inscrição, cancelamento)
+4. Pagamentos (integração Pagar.me)
+5. Check-ins (QR Code, validação)
+6. Feedbacks (avaliação pós-evento)
+7. Certificados (geração, download)
+8. Notificações (push via FCM)

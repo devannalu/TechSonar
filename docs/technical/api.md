@@ -134,9 +134,94 @@ Authorization: Bearer <accessToken>
 
 ---
 
+## Rotas de Usuários e Perfis
+
+### 1. Obter Perfil Completo (`GET /users/me`)
+Retorna os dados completos do usuário autenticado e seu perfil (`UserProfile`).
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+- **Exemplo de Response (200 OK)**:
+```json
+{
+  "id": "c880cd69-8ce8-4ca4-bf4b-e85dcf54aef9",
+  "name": "Anna Luiza",
+  "email": "anna@example.com",
+  "role": "USER",
+  "status": "ACTIVE",
+  "profile": {
+    "id": "de5b94f1-94d3-455b-80a2-25de02652b0f",
+    "displayName": "Anna",
+    "username": "devannalu",
+    "phone": null,
+    "cpf": null,
+    "birthDate": null,
+    "avatarUrl": null,
+    "bio": null,
+    "city": "Salvador",
+    "state": "BA",
+    "country": "Brasil",
+    "notifyEmail": true,
+    "notifyPush": true,
+    "isPublic": true
+  },
+  "createdAt": "2026-07-06T13:58:41.000Z",
+  "updatedAt": "2026-07-06T13:58:41.000Z"
+}
+```
+
+### 2. Atualizar Perfil (`PATCH /users/me/profile`)
+Permite editar campos de dados do perfil `UserProfile`.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+- **Request Body**:
+```json
+{
+  "displayName": "Anna",
+  "username": "devannalu",
+  "city": "Salvador",
+  "state": "BA"
+}
+```
+- **Exemplo de Response (200 OK)**:
+Retorna o perfil (`UserProfile`) atualizado.
+
+### 3. Atualizar Conta (`PATCH /users/me/account`)
+Permite editar o nome ou e-mail na conta `User`.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+- **Request Body**:
+```json
+{
+  "name": "Anna Luiza Silva",
+  "email": "annasilva@example.com"
+}
+```
+- **Exemplo de Response (200 OK)**:
+Retorna o usuário (`User`) atualizado sem `passwordHash`.
+
+### 4. Exclusão Lógica da Conta (`DELETE /users/me`)
+Inativa a conta alterando o status para `DELETED`, preenche `deletedAt` com a data atual e anonimiza o e-mail para evitar conflitos futuros, sem remover registros históricos como certificados ou inscrições.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+- **Exemplo de Response (200 OK)**:
+```json
+{
+  "message": "Conta excluída com sucesso."
+}
+```
+
+---
+
 ## Outros Módulos Planejados
 
-- **Users** (Gestão de Usuários e Perfis)
 - **Organizer Profiles** (Perfis Organizadores, equipe e permissões)
 - **Events** (Publicação e gerenciamento de eventos)
 - **Registrations** (Inscrições de participantes)
