@@ -172,13 +172,23 @@ Permite gerenciar eventos de tecnologia.
 - `PATCH /events/:id/cancel` — Cancelar um evento (exige OWNER ou ADMIN)
 - `DELETE /events/:id` — Exclusão lógica do evento (exige OWNER ou ADMIN)
 
+## Registrations
+
+Permite que os participantes se inscrevam nos eventos.
+
+### Rotas disponíveis
+- `POST /registrations` — Inscrever-se em um evento (gratuito: confirma imediatamente e gera ticket; pago: cria inscrição pendente de pagamento)
+- `GET /registrations/me` — Listar inscrições do próprio usuário autenticado
+- `GET /registrations/:id` — Obter detalhes de uma inscrição específica
+- `DELETE /registrations/:id` — Cancelar uma inscrição (devolve a vaga ao evento se estava confirmada e se o evento não tiver iniciado)
+- `GET /registrations/event/:eventId` — Listar inscrições de um evento específico (exige ser membro do perfil organizador)
+
 Para mais detalhes e exemplos, veja a documentação de [API](../../docs/technical/api.md).
 
 ## Próximos módulos
 
-1. Inscrições (inscrição, cancelamento)
-2. Pagamentos (integração Pagar.me)
-3. Check-ins (QR Code, validação)
-4. Feedbacks (avaliação pós-evento)
-5. Certificados (geração, download)
-6. Notificações (push via FCM)
+1. Pagamentos (integração Pagar.me)
+2. Check-ins (QR Code, validação)
+3. Feedbacks (avaliação pós-evento)
+4. Certificados (geração, download)
+5. Notificações (push via FCM)

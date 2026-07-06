@@ -456,9 +456,89 @@ Realiza exclusão lógica preenchendo o `deletedAt` e mudando o status para `ARC
 
 ---
 
+## Rotas de Inscrições
+
+### 1. Criar Inscrição (`POST /registrations`)
+Inscreve o usuário autenticado em um evento publicado.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+- **Request Body**:
+```json
+{
+  "eventId": "e88a0322-8ce8-4ca4-bf4b-e85dcf54aef9"
+}
+```
+- **Exemplo de Response (Gratuito - 201 Created)**:
+```json
+{
+  "id": "reg-uuid-12345",
+  "status": "CONFIRMED",
+  "eventId": "e88a0322-8ce8-4ca4-bf4b-e85dcf54aef9",
+  "userId": "user-uuid-12345",
+  "ticket": {
+    "id": "ticket-uuid-12345",
+    "code": "TS-2026-A8F2K9",
+    "status": "ACTIVE"
+  },
+  "event": {
+    "id": "e88a0322-8ce8-4ca4-bf4b-e85dcf54aef9",
+    "title": "Tech Girls Night",
+    "isFree": true
+  }
+}
+```
+- **Exemplo de Response (Pago - 201 Created)**:
+```json
+{
+  "id": "reg-uuid-54321",
+  "status": "PENDING_PAYMENT",
+  "eventId": "pago-event-uuid",
+  "userId": "user-uuid-12345",
+  "ticket": null,
+  "event": {
+    "id": "pago-event-uuid",
+    "title": "Flutter Advanced",
+    "isFree": false,
+    "price": "49.90"
+  },
+  "nextStep": "PAYMENT_REQUIRED"
+}
+```
+
+### 2. Minhas Inscrições (`GET /registrations/me`)
+Retorna todas as inscrições do participante logado, ordenadas pela data de inscrição decrescente.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+
+### 3. Detalhes de uma Inscrição (`GET /registrations/:id`)
+Retorna detalhes completos de uma inscrição. Permitido apenas para o próprio participante ou membros do Perfil Organizador que gerencia o evento.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+
+### 4. Cancelar Inscrição (`DELETE /registrations/:id`)
+Cancela a inscrição. Se estiver confirmada (evento gratuito ou pago já compensado), o ticket é cancelado e a vaga é devolvida ao evento (caso o evento ainda não tenha iniciado). Exige ser o próprio participante ou dono/administrador/gerente do Perfil Organizador.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+
+### 5. Inscrições do Evento (`GET /registrations/event/:eventId`)
+Lista todos os inscritos de um evento para o organizador. Permite paginação, filtro por status e busca textual por nome/email de participante.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+
+---
+
 ## Outros Módulos Planejados
 
-- **Registrations** (Inscrições de participantes)
 - **Payments** (Processamento de pagamentos via Pagar.me)
 - **Check-ins** (Validação via QR Code)
 - **Feedbacks** (Avaliação pós-evento)

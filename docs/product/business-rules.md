@@ -23,3 +23,8 @@ Regras de negócio oficiais do TechSonar.
 17. Se o evento for gratuito (isFree = true), o preço deve obrigatoriamente ser zero. Se possuir preço maior que zero, o evento é classificado como pago (isFree = false).
 18. A exclusão de um evento é sempre lógica (preenchendo a data em `deletedAt` e alterando o status para `ARCHIVED`) para fins de preservação de histórico.
 19. Apenas membros ativos do organizador com papéis de OWNER, ADMIN ou EVENT_MANAGER podem criar, editar ou publicar eventos. A exclusão ou cancelamento é restrito a OWNER e ADMIN.
+20. Um participante não pode se inscrever mais de uma vez no mesmo evento (inscrições ativas/pendentes).
+21. Para eventos gratuitos (isFree = true), a inscrição é criada como CONFIRMED, o ticket correspondente é gerado como ACTIVE e a vaga é deduzida de `availableSpots` imediatamente.
+22. Para eventos pagos (isFree = false), a inscrição é criada como PENDING_PAYMENT. O ticket e a reserva permanente da vaga só são criados após a confirmação do pagamento.
+23. O cancelamento de uma inscrição confirmada (CONFIRMED) invalida o ticket correspondente (CANCELED) e devolve a vaga aumentando `availableSpots` em 1 (caso o evento ainda não tenha iniciado).
+24. As operações que envolvem alteração de vagas, tickets e status de inscrição devem ser executadas em transação de banco de dados para evitar inconsistências.
