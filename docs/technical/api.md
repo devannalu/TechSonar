@@ -537,9 +537,75 @@ Authorization: Bearer <accessToken>
 
 ---
 
+## Rotas de Pagamentos
+
+### 1. Criar Pagamento (`POST /payments`)
+Gera uma cobrança Pix no Pagar.me para uma inscrição que esteja no status `PENDING_PAYMENT`.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+- **Request Body**:
+```json
+{
+  "registrationId": "reg-uuid-12345",
+  "method": "PIX"
+}
+```
+- **Exemplo de Response (201 Created)**:
+```json
+{
+  "id": "pay-uuid-12345",
+  "registrationId": "reg-uuid-12345",
+  "status": "PENDING",
+  "method": "PIX",
+  "amount": "49.90",
+  "currency": "BRL",
+  "provider": "pagarme",
+  "providerOrderId": "order-12345",
+  "providerChargeId": "charge-12345",
+  "pixQrCode": "https://qr-code-url.png",
+  "pixCopyPaste": "00020126360014...",
+  "expiresAt": "2026-07-06T15:30:00.000Z",
+  "createdAt": "2026-07-06T15:00:00.000Z"
+}
+```
+
+### 2. Detalhes de um Pagamento (`GET /payments/:id`)
+Obtém detalhes do pagamento local. Exige ser o próprio participante dono da inscrição ou membro ativo do Perfil Organizador do evento.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+
+### 3. Consultar Pagamento da Inscrição (`GET /payments/registration/:registrationId`)
+Permite ao participante consultar o status do pagamento vinculado a sua inscrição.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+
+### 4. Webhook do Pagar.me (`POST /payments/webhooks/pagarme`)
+Recebe eventos de alteração de status enviados pelo Pagar.me de forma assíncrona. Essa rota é pública e realiza o processamento de forma idempotente.
+- **Request Body (Exemplo Pix Pago)**:
+```json
+{
+  "id": "evt_12345",
+  "type": "charge.paid",
+  "data": {
+    "id": "charge-12345",
+    "order": {
+      "id": "order-12345"
+    },
+    "status": "paid"
+  }
+}
+```
+
+---
+
 ## Outros Módulos Planejados
 
-- **Payments** (Processamento de pagamentos via Pagar.me)
 - **Check-ins** (Validação via QR Code)
 - **Feedbacks** (Avaliação pós-evento)
 - **Certificates** (Geração e download de certificados)

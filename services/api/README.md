@@ -183,12 +183,21 @@ Permite que os participantes se inscrevam nos eventos.
 - `DELETE /registrations/:id` — Cancelar uma inscrição (devolve a vaga ao evento se estava confirmada e se o evento não tiver iniciado)
 - `GET /registrations/event/:eventId` — Listar inscrições de um evento específico (exige ser membro do perfil organizador)
 
+## Payments
+
+Permite gerar e processar pagamentos integrados com o gateway **Pagar.me**.
+
+### Rotas disponíveis
+- `POST /payments` — Criar intenção de pagamento para inscrição pendente (gera QR Code / Copia e Cola para Pix)
+- `GET /payments/:id` — Obter detalhes de um pagamento específico
+- `GET /payments/registration/:registrationId` — Consultar pagamento vinculado a uma inscrição
+- `POST /payments/webhooks/pagarme` — Webhook público para recepção e processamento de eventos do Pagar.me (idempotente)
+
 Para mais detalhes e exemplos, veja a documentação de [API](../../docs/technical/api.md).
 
 ## Próximos módulos
 
-1. Pagamentos (integração Pagar.me)
-2. Check-ins (QR Code, validação)
-3. Feedbacks (avaliação pós-evento)
-4. Certificados (geração, download)
-5. Notificações (push via FCM)
+1. Check-ins (QR Code, validação)
+2. Feedbacks (avaliação pós-evento)
+3. Certificados (geração, download)
+4. Notificações (push via FCM)

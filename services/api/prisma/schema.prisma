@@ -379,6 +379,8 @@ model Payment {
   userId         String?
 
   provider          String        @default("pagarme")
+  providerOrderId   String?
+  providerChargeId  String?
   providerPaymentId String?
   status            PaymentStatus @default(PENDING)
   method            PaymentMethod
@@ -390,6 +392,8 @@ model Payment {
   pixQrCode      String?
   pixCopyPaste   String?
   cardLastDigits String?
+  checkoutUrl    String?
+  expiresAt      DateTime?
   paidAt         DateTime?
   canceledAt     DateTime?
   refundedAt     DateTime?
@@ -406,6 +410,8 @@ model Payment {
   @@index([userId])
   @@index([status])
   @@index([providerPaymentId])
+  @@index([providerOrderId])
+  @@index([providerChargeId])
   @@map("payments")
 }
 

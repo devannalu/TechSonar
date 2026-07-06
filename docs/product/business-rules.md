@@ -28,3 +28,8 @@ Regras de negócio oficiais do TechSonar.
 22. Para eventos pagos (isFree = false), a inscrição é criada como PENDING_PAYMENT. O ticket e a reserva permanente da vaga só são criados após a confirmação do pagamento.
 23. O cancelamento de uma inscrição confirmada (CONFIRMED) invalida o ticket correspondente (CANCELED) e devolve a vaga aumentando `availableSpots` em 1 (caso o evento ainda não tenha iniciado).
 24. As operações que envolvem alteração de vagas, tickets e status de inscrição devem ser executadas em transação de banco de dados para evitar inconsistências.
+25. O aplicativo mobile nunca deve se comunicar diretamente com o Pagar.me usando chaves privadas do gateway de pagamento. Toda comunicação deve passar pela API do TechSonar.
+26. Os pagamentos gerados via Pix expiram em 30 minutos. Caso expirem, o participante deve gerar uma nova intenção de pagamento.
+27. A confirmação do pagamento é realizada assincronamente através de um webhook exposto pela API do TechSonar.
+28. Caso o evento seja esgotado no intervalo entre a geração do Pix e a recepção do webhook de pagamento, o pagamento permanece como pago (PAID) para conciliação administrativa e reembolso futuro, mas a inscrição não é confirmada e nenhum ingresso é gerado.
+29. Todos os webhooks recebidos são persistidos para auditoria, e o processamento deles deve garantir idempotência.
