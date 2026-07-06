@@ -147,13 +147,25 @@ Permite ao usuário autenticado obter e gerenciar seus próprios dados.
 - `PATCH /users/me/account` — Editar dados básicos da conta (`User`)
 - `DELETE /users/me` — Exclusão lógica da conta
 
+## Organizer Profiles
+
+Permite criar e gerenciar Perfis Organizadores de eventos.
+
+### Rotas disponíveis
+- `POST /organizer-profiles` — Criar um Perfil Organizador (associa o criador como OWNER)
+- `GET /organizer-profiles/me` — Listar Perfis Organizadores onde o usuário logado é dono ou membro
+- `GET /organizer-profiles/:id` — Obter dados públicos de um perfil organizador (público)
+- `PATCH /organizer-profiles/:id` — Editar Perfil Organizador (exige ser OWNER ou ADMIN do perfil)
+- `DELETE /organizer-profiles/:id` — Exclusão lógica do Perfil Organizador (exige ser OWNER do perfil)
+
+Para mais detalhes e exemplos, veja a documentação de [API](../../docs/technical/api.md).
+
 ## Próximos módulos
 
-1. Perfis Organizadores (CRUD, membros, permissões)
-2. Eventos (CRUD, publicação, busca)
-3. Inscrições (inscrição, cancelamento)
-4. Pagamentos (integração Pagar.me)
-5. Check-ins (QR Code, validação)
-6. Feedbacks (avaliação pós-evento)
-7. Certificados (geração, download)
-8. Notificações (push via FCM)
+1. Eventos (CRUD, publicação, busca)
+2. Inscrições (inscrição, cancelamento)
+3. Pagamentos (integração Pagar.me)
+4. Check-ins (QR Code, validação)
+5. Feedbacks (avaliação pós-evento)
+6. Certificados (geração, download)
+7. Notificações (push via FCM)

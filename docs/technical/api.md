@@ -220,9 +220,135 @@ Authorization: Bearer <accessToken>
 
 ---
 
+## Rotas de Perfis Organizadores
+
+### 1. Criar Perfil Organizador (`POST /organizer-profiles`)
+Cria um Perfil Organizador associando o criador automaticamente como membro e dono com o papel `OWNER`.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+- **Request Body**:
+```json
+{
+  "type": "COMMUNITY",
+  "name": "Tech Sisters",
+  "description": "Comunidade para mulheres na tecnologia.",
+  "city": "Salvador",
+  "state": "BA",
+  "country": "Brasil",
+  "instagram": "@tech.sisterss",
+  "email": "contato@techsonar.com"
+}
+```
+- **Exemplo de Response (201 Created)**:
+```json
+{
+  "id": "7ca6479f-6825-4c07-b353-066cb5dcf54a",
+  "ownerId": "c880cd69-8ce8-4ca4-bf4b-e85dcf54aef9",
+  "type": "COMMUNITY",
+  "name": "Tech Sisters",
+  "slug": "tech-sisters",
+  "description": "Comunidade para mulheres na tecnologia.",
+  "city": "Salvador",
+  "state": "BA",
+  "country": "Brasil",
+  "isVerified": false,
+  "isActive": true,
+  "createdAt": "2026-07-06T14:27:07.000Z",
+  "updatedAt": "2026-07-06T14:27:07.000Z",
+  "deletedAt": null
+}
+```
+
+### 2. Meus Perfis Organizadores (`GET /organizer-profiles/me`)
+Lista todos os Perfis Organizadores aos quais o usuário autenticado está vinculado como proprietário ou membro.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+- **Exemplo de Response (200 OK)**:
+```json
+[
+  {
+    "id": "7ca6479f-6825-4c07-b353-066cb5dcf54a",
+    "name": "Tech Sisters",
+    "slug": "tech-sisters",
+    "type": "COMMUNITY",
+    "city": "Salvador",
+    "state": "BA",
+    "isVerified": false,
+    "isActive": true,
+    "memberRole": "OWNER",
+    "permissions": ["all"],
+    "_count": {
+      "events": 0,
+      "members": 1
+    }
+  }
+]
+```
+
+### 3. Perfil Organizador Público (`GET /organizer-profiles/:id`)
+Retorna dados públicos de um Perfil Organizador pelo ID. Rota pública que não exige autenticação.
+- **Exemplo de Response (200 OK)**:
+```json
+{
+  "id": "7ca6479f-6825-4c07-b353-066cb5dcf54a",
+  "type": "COMMUNITY",
+  "name": "Tech Sisters",
+  "slug": "tech-sisters",
+  "description": "Comunidade para mulheres na tecnologia.",
+  "logoUrl": null,
+  "bannerUrl": null,
+  "city": "Salvador",
+  "state": "BA",
+  "country": "Brasil",
+  "website": null,
+  "instagram": "@tech.sisterss",
+  "linkedin": null,
+  "isVerified": false,
+  "isActive": true,
+  "createdAt": "2026-07-06T14:27:07.000Z",
+  "_count": {
+    "events": 0
+  }
+}
+```
+
+### 4. Atualizar Perfil Organizador (`PATCH /organizer-profiles/:id`)
+Permite atualizar campos de dados do Perfil Organizador. Exige que o usuário seja OWNER do perfil ou um membro com permissão de OWNER/ADMIN.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+- **Request Body**:
+```json
+{
+  "description": "Nova descrição da comunidade.",
+  "instagram": "@techsisters.oficial"
+}
+```
+- **Exemplo de Response (200 OK)**:
+Retorna o perfil organizador atualizado.
+
+### 5. Excluir Perfil Organizador (`DELETE /organizer-profiles/:id`)
+Exclusão lógica do Perfil Organizador. Altera o status `isActive` para false e preenche `deletedAt` com a data atual. Exige que o usuário seja o OWNER do perfil.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+- **Exemplo de Response (200 OK)**:
+```json
+{
+  "message": "Perfil Organizador excluído com sucesso."
+}
+```
+
+---
+
 ## Outros Módulos Planejados
 
-- **Organizer Profiles** (Perfis Organizadores, equipe e permissões)
 - **Events** (Publicação e gerenciamento de eventos)
 - **Registrations** (Inscrições de participantes)
 - **Payments** (Processamento de pagamentos via Pagar.me)

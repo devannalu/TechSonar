@@ -43,3 +43,12 @@ Todo evento precisa pertencer a um Perfil Organizador.
 - Possui check-ins
 - Possui feedbacks
 - Possui certificados
+
+## Regras de Negócio e Gestão
+
+- **Criação**: Qualquer usuário ativo pode criar um Perfil Organizador. Ao criar, ele se torna automaticamente o `OWNER` do perfil.
+- **Relação com Eventos**: Todo evento precisa estar vinculado a um Perfil Organizador. Não há eventos sem um perfil responsável.
+- **Hierarquia de Papéis**:
+  - `OWNER`: Dono do perfil, com controle total, incluindo exclusão do perfil.
+  - `ADMIN`: Administrador, com controle de edição, gestão de eventos e membros (exceto exclusão do perfil).
+  - Outros papéis adicionais (ex: `EVENT_MANAGER`, `CHECKIN_STAFF`) possuem permissões específicas limitadas.
