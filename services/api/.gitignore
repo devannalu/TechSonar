@@ -1,0 +1,24 @@
+# Node
+node_modules/
+dist/
+coverage/
+
+# Environment
+.env
+
+# Build artifacts
+*.js.map
+*.d.ts
+!jest.config.js
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
