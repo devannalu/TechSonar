@@ -2,10 +2,6 @@
 
 Documentação da API REST do TechSonar.
 
-## Status
-
-🚧 Em fase de planejamento.
-
 ## Tecnologia
 
 - **Framework:** NestJS
@@ -13,19 +9,139 @@ Documentação da API REST do TechSonar.
 - **ORM:** Prisma
 - **Banco:** PostgreSQL
 
-## Módulos Planejados
+## Autenticação
 
-- Auth (autenticação e autorização)
-- Users (gestão de usuários)
-- Organizer Profiles (perfis organizadores)
-- Events (eventos)
-- Registrations (inscrições)
-- Payments (pagamentos)
-- Check-ins (check-in via QR Code)
-- Feedbacks (feedbacks pós-evento)
-- Certificates (certificados)
-- Notifications (notificações push)
+A autenticação é baseada em JWT (JSON Web Tokens) contendo dois tokens principais:
+- **Access Token**: Token de curta duração (15 minutos) usado para acessar rotas protegidas.
+- **Refresh Token**: Token de longa duração (7 dias) usado para obter novos pares de tokens sem precisar reinserir as credenciais.
 
-## Endpoints
+> [!NOTE]
+> Fluxos como recuperação de senha, login social e verificação de e-mail estão planejados para fases posteriores.
 
-Os endpoints serão documentados conforme cada módulo for implementado.
+### Como usar o Access Token
+Envie o token no header HTTP `Authorization` de todas as requisições protegidas:
+```http
+Authorization: Bearer <accessToken>
+```
+
+### Como usar o Refresh Token
+Envie o token no header HTTP `Authorization` da requisição `POST /auth/refresh`:
+```http
+Authorization: Bearer <refreshToken>
+```
+
+---
+
+## Rotas de Autenticação
+
+### 1. Cadastro de Usuário (`POST /auth/register`)
+Cria um usuário no sistema e retorna seus dados seguros + tokens JWT.
+
+- **Request Body**:
+```json
+{
+  "name": "Anna Luiza",
+  "email": "anna@example.com",
+  "password": "12345678"
+}
+```
+
+- **Exemplo de Response (201 Created)**:
+```json
+{
+  "user": {
+    "id": "c880cd69-8ce8-4ca4-bf4b-e85dcf54aef9",
+    "name": "Anna Luiza",
+    "email": "anna@example.com",
+    "role": "USER",
+    "status": "ACTIVE"
+  },
+  "tokens": {
+    "accessToken": "eyJhbGciOiJIUz...",
+    "refreshToken": "eyJhbGciOiJIUz..."
+  }
+}
+```
+
+### 2. Login (`POST /auth/login`)
+Valida as credenciais do usuário e retorna seus dados + tokens JWT.
+
+- **Request Body**:
+```json
+{
+  "email": "anna@example.com",
+  "password": "12345678"
+}
+```
+
+- **Exemplo de Response (200 OK)**:
+```json
+{
+  "user": {
+    "id": "c880cd69-8ce8-4ca4-bf4b-e85dcf54aef9",
+    "name": "Anna Luiza",
+    "email": "anna@example.com",
+    "role": "USER",
+    "status": "ACTIVE"
+  },
+  "tokens": {
+    "accessToken": "eyJhbGciOiJIUz...",
+    "refreshToken": "eyJhbGciOiJIUz..."
+  }
+}
+```
+
+### 3. Renovar Tokens (`POST /auth/refresh`)
+Gera um novo par de tokens JWT recebendo o Refresh Token válido no header.
+
+- **Request Header**:
+```http
+Authorization: Bearer <refreshToken>
+```
+
+- **Exemplo de Response (200 OK)**:
+```json
+{
+  "accessToken": "eyJhbGciOiJIUz...",
+  "refreshToken": "eyJhbGciOiJIUz..."
+}
+```
+
+### 4. Perfil Autenticado (`GET /auth/me`)
+Retorna os dados do usuário autenticado a partir do Access Token.
+
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+
+- **Exemplo de Response (200 OK)**:
+```json
+{
+  "id": "c880cd69-8ce8-4ca4-bf4b-e85dcf54aef9",
+  "name": "Anna Luiza",
+  "email": "anna@example.com",
+  "role": "USER",
+  "status": "ACTIVE",
+  "profile": {
+    "id": "de5b94f1-94d3-455b-80a2-25de02652b0f",
+    "displayName": null,
+    "username": null
+  },
+  "createdAt": "2026-07-06T13:58:41.000Z"
+}
+```
+
+---
+
+## Outros Módulos Planejados
+
+- **Users** (Gestão de Usuários e Perfis)
+- **Organizer Profiles** (Perfis Organizadores, equipe e permissões)
+- **Events** (Publicação e gerenciamento de eventos)
+- **Registrations** (Inscrições de participantes)
+- **Payments** (Processamento de pagamentos via Pagar.me)
+- **Check-ins** (Validação via QR Code)
+- **Feedbacks** (Avaliação pós-evento)
+- **Certificates** (Geração e download de certificados)
+- **Notifications** (Push notifications via Firebase)

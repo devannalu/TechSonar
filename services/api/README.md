@@ -125,10 +125,21 @@ Entidades principais:
 - Notification
 - AuditLog
 
+## Autenticação
+
+A autenticação real está implementada via JWT com Access Token e Refresh Token.
+
+### Rotas disponíveis
+- `POST /auth/register` — Cadastro de usuário
+- `POST /auth/login` — Login
+- `POST /auth/refresh` — Atualizar Access/Refresh Token (necessita Refresh Token em `Authorization: Bearer <token>`)
+- `GET /auth/me` — Obter dados do usuário logado (necessita Access Token em `Authorization: Bearer <token>`)
+
+Para mais detalhes e exemplos, veja a documentação de [API](../../docs/technical/api.md).
+
 ## Próximos módulos
 
-1. Autenticação (registro, login, JWT)
-2. Usuários (perfil, configurações)
+1. Usuários (perfil, configurações)
 3. Perfis Organizadores (CRUD, membros, permissões)
 4. Eventos (CRUD, publicação, busca)
 5. Inscrições (inscrição, cancelamento)
