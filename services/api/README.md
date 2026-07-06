@@ -204,10 +204,20 @@ Permite registrar presença (check-in) de participantes confirmados em eventos.
 - `GET /checkins/event/:eventId` — Listar check-ins de um evento (exige ser membro do organizador)
 - `GET /checkins/:id` — Obter detalhes de um check-in pelo ID
 
+## Feedbacks
+
+Permite enviar avaliações pós-evento de participantes presentes.
+
+### Rotas disponíveis
+- `POST /feedbacks` — Enviar feedback pós-evento (exige inscrição no status CHECKED_IN)
+- `GET /feedbacks/me/event/:eventId` — Obter o feedback enviado pelo próprio participante para o evento
+- `GET /feedbacks/event/:eventId` — Listar feedbacks de um evento (exige ser membro do organizador)
+- `GET /feedbacks/event/:eventId/metrics` — Consultar médias de notas e distribuição de recomendações do evento (exige ser membro do organizador)
+- `GET /feedbacks/:id` — Obter detalhes de um feedback específico pelo ID
+
 Para mais detalhes e exemplos, veja a documentação de [API](../../docs/technical/api.md).
 
 ## Próximos módulos
 
-1. Feedbacks (avaliação pós-evento)
-2. Certificados (geração, download)
-3. Notificações (push via FCM)
+1. Certificados (geração, download)
+2. Notificações (push via FCM)

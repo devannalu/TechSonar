@@ -695,8 +695,95 @@ Authorization: Bearer <accessToken>
 
 ---
 
+## Rotas de Feedbacks
+
+### 1. Registrar Feedback (`POST /feedbacks`)
+Registra a avaliação do participante sobre o evento. Exige que o participante tenha check-in confirmado (status `CHECKED_IN`).
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+- **Request Body**:
+```json
+{
+  "registrationId": "reg-uuid-12345",
+  "overallRating": 5,
+  "contentRating": 5,
+  "organizationRating": 4,
+  "speakerRating": 5,
+  "positiveComment": "Evento muito bom.",
+  "improvementComment": "Mais tempo para networking.",
+  "wouldRecommend": true
+}
+```
+- **Exemplo de Response (201 Created)**:
+```json
+{
+  "id": "feedback-uuid-123",
+  "registrationId": "reg-uuid-12345",
+  "eventId": "event-uuid-123",
+  "userId": "user-uuid-123",
+  "overallRating": 5,
+  "contentRating": 5,
+  "organizationRating": 4,
+  "speakerRating": 5,
+  "positiveComment": "Evento muito bom.",
+  "improvementComment": "Mais tempo para networking.",
+  "wouldRecommend": true,
+  "createdAt": "2026-07-06T16:56:00.000Z"
+}
+```
+
+### 2. Consultar Meu Feedback (`GET /feedbacks/me/event/:eventId`)
+Obtém o feedback enviado pelo próprio participante para o evento.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+
+### 3. Listar Feedbacks do Evento (`GET /feedbacks/event/:eventId`)
+Retorna feedbacks do evento com paginação, filtros por nota e busca textual por participante. Exige ser membro da organização do evento.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+
+### 4. Consultar Métricas de Feedback (`GET /feedbacks/event/:eventId/metrics`)
+Consolida médias aritméticas das notas e a taxa de recomendação em porcentagem para o painel administrativo. Exige ser membro da organização do evento.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+- **Exemplo de Response (200 OK)**:
+```json
+{
+  "eventId": "event-uuid-123",
+  "totalFeedbacks": 10,
+  "averageOverallRating": 4.7,
+  "averageContentRating": 4.8,
+  "averageOrganizationRating": 4.6,
+  "averageSpeakerRating": 4.9,
+  "recommendationRate": 90,
+  "ratingDistribution": {
+    "1": 0,
+    "2": 0,
+    "3": 1,
+    "4": 2,
+    "5": 7
+  }
+}
+```
+
+### 5. Detalhes de um Feedback (`GET /feedbacks/:id`)
+Retorna detalhes completos do feedback. Liberado ao próprio participante ou a membros do Perfil Organizador.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+
+---
+
 ## Outros Módulos Planejados
 
-- **Feedbacks** (Avaliação pós-evento)
 - **Certificates** (Geração e download de certificados)
 - **Notifications** (Push notifications via Firebase)

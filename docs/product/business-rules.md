@@ -39,3 +39,9 @@ Regras de negócio oficiais do TechSonar.
 33. Ao confirmar o check-in, em transação atômica do banco: o status da Registration muda para CHECKED_IN, o status do Ticket muda para USED, e o registro do Checkin é criado.
 34. O check-in deve respeitar a janela de horário configurada no evento (entre `checkinStartsAt` e `checkinEndsAt`), caso esses campos estejam definidos.
 35. Organizadores ativos do Perfil Organizador com os papéis de OWNER, ADMIN, EVENT_MANAGER ou CHECKIN_STAFF podem registrar check-in manual para qualquer participante do evento. Outros papéis não possuem permissão para check-in manual.
+42. O envio de feedback só é permitido para participantes com inscrição no status CHECKED_IN (check-in já efetuado). Inscrições com outros status (ex. CONFIRMED, PENDING_PAYMENT) são bloqueadas.
+43. Cada participante só pode enviar um único feedback por inscrição. O envio duplicado retorna erro de conflito (409).
+44. O feedback enviado é persistido e associado à inscrição, evento e usuário para fins de auditoria e cálculo de métricas.
+45. Qualquer membro ativo do Perfil Organizador possui permissão para visualizar a listagem e os dados consolidados das métricas de feedback dos eventos.
+46. A consolidação das métricas de feedback do evento (como médias aritméticas e taxa de recomendação) é calculada dinamicamente com base nos feedbacks válidos.
+47. O feedback pós-evento será um pré-requisito obrigatório para a liberação e emissão futura de certificados de participação.
