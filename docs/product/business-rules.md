@@ -33,3 +33,9 @@ Regras de negócio oficiais do TechSonar.
 27. A confirmação do pagamento é realizada assincronamente através de um webhook exposto pela API do TechSonar.
 28. Caso o evento seja esgotado no intervalo entre a geração do Pix e a recepção do webhook de pagamento, o pagamento permanece como pago (PAID) para conciliação administrativa e reembolso futuro, mas a inscrição não é confirmada e nenhum ingresso é gerado.
 29. Todos os webhooks recebidos são persistidos para auditoria, e o processamento deles deve garantir idempotência.
+30. O QR Code pertence ao evento, e não ao participante. O check-in valida a presença baseada no ID do evento em conjunto com a inscrição do usuário autenticado.
+31. O check-in só é permitido se a inscrição do participante estiver no status CONFIRMED e se o ingresso (Ticket) correspondente estiver ACTIVE.
+32. Check-ins não podem ser duplicados para a mesma inscrição.
+33. Ao confirmar o check-in, em transação atômica do banco: o status da Registration muda para CHECKED_IN, o status do Ticket muda para USED, e o registro do Checkin é criado.
+34. O check-in deve respeitar a janela de horário configurada no evento (entre `checkinStartsAt` e `checkinEndsAt`), caso esses campos estejam definidos.
+35. Organizadores ativos do Perfil Organizador com os papéis de OWNER, ADMIN, EVENT_MANAGER ou CHECKIN_STAFF podem registrar check-in manual para qualquer participante do evento. Outros papéis não possuem permissão para check-in manual.

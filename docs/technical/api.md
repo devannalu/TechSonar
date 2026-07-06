@@ -604,9 +604,99 @@ Recebe eventos de alteração de status enviados pelo Pagar.me de forma assíncr
 
 ---
 
+## Rotas de Check-ins
+
+### 1. Registrar Check-in (`POST /checkins`)
+Registra presença do próprio participante no evento através do ID do evento.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+- **Request Body**:
+```json
+{
+  "eventId": "e88a0322-8ce8-4ca4-bf4b-e85dcf54aef9"
+}
+```
+- **Exemplo de Response (201 Created)**:
+```json
+{
+  "id": "checkin-uuid-123",
+  "eventId": "e88a0322-8ce8-4ca4-bf4b-e85dcf54aef9",
+  "userId": "user-uuid-123",
+  "registrationId": "reg-uuid-123",
+  "method": "QR_CODE",
+  "checkedInAt": "2026-07-06T16:30:00.000Z",
+  "event": {
+    "id": "e88a0322-8ce8-4ca4-bf4b-e85dcf54aef9",
+    "title": "Tech Girls Night"
+  }
+}
+```
+
+### 2. Check-in Manual (`POST /checkins/manual`)
+Permite ao organizador (OWNER, ADMIN, EVENT_MANAGER, CHECKIN_STAFF) registrar check-in manual para um participante pelo ID da inscrição.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+- **Request Body**:
+```json
+{
+  "registrationId": "reg-uuid-12345",
+  "notes": "Documento conferido na entrada."
+}
+```
+- **Exemplo de Response (201 Created)**:
+```json
+{
+  "id": "checkin-uuid-456",
+  "registrationId": "reg-uuid-12345",
+  "eventId": "event-uuid-123",
+  "userId": "user-uuid-789",
+  "method": "MANUAL",
+  "validatedById": "organizer-user-uuid",
+  "notes": "Documento conferido na entrada.",
+  "checkedInAt": "2026-07-06T16:30:00.000Z"
+}
+```
+
+### 3. Consultar Meu Check-in por Evento (`GET /checkins/me/event/:eventId`)
+Retorna se o participante autenticado já possui presença registrada em um evento.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+- **Exemplo de Response (200 OK - Sim)**:
+```json
+{
+  "hasCheckin": true,
+  "checkin": {
+    "id": "checkin-uuid-123",
+    "method": "QR_CODE",
+    "checkedInAt": "2026-07-06T16:30:00.000Z"
+  }
+}
+```
+
+### 4. Listar Check-ins do Evento (`GET /checkins/event/:eventId`)
+Lista todos os check-ins registrados para o painel do organizador. Permite paginação, filtros e busca textual por nome/email de participante.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+
+### 5. Detalhes de um Check-in (`GET /checkins/:id`)
+Retorna detalhes completos de um check-in pelo ID. Acesso liberado ao próprio participante ou a membros do Perfil Organizador.
+- **Request Header**:
+```http
+Authorization: Bearer <accessToken>
+```
+
+---
+
 ## Outros Módulos Planejados
 
-- **Check-ins** (Validação via QR Code)
 - **Feedbacks** (Avaliação pós-evento)
 - **Certificates** (Geração e download de certificados)
 - **Notifications** (Push notifications via Firebase)

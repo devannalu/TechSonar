@@ -193,11 +193,21 @@ Permite gerar e processar pagamentos integrados com o gateway **Pagar.me**.
 - `GET /payments/registration/:registrationId` — Consultar pagamento vinculado a uma inscrição
 - `POST /payments/webhooks/pagarme` — Webhook público para recepção e processamento de eventos do Pagar.me (idempotente)
 
+## Check-ins
+
+Permite registrar presença (check-in) de participantes confirmados em eventos.
+
+### Rotas disponíveis
+- `POST /checkins` — Registrar presença do próprio participante via QR Code (exige inscrição confirmada e ingresso ativo)
+- `POST /checkins/manual` — Registrar check-in manual de um participante (exige permissão OWNER, ADMIN, EVENT_MANAGER ou CHECKIN_STAFF do organizador)
+- `GET /checkins/me/event/:eventId` — Obter status e detalhes do check-in do próprio participante para um evento
+- `GET /checkins/event/:eventId` — Listar check-ins de um evento (exige ser membro do organizador)
+- `GET /checkins/:id` — Obter detalhes de um check-in pelo ID
+
 Para mais detalhes e exemplos, veja a documentação de [API](../../docs/technical/api.md).
 
 ## Próximos módulos
 
-1. Check-ins (QR Code, validação)
-2. Feedbacks (avaliação pós-evento)
-3. Certificados (geração, download)
-4. Notificações (push via FCM)
+1. Feedbacks (avaliação pós-evento)
+2. Certificados (geração, download)
+3. Notificações (push via FCM)
