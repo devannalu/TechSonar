@@ -1,0 +1,72 @@
+# =========================
+# TechSonar Monorepo
+# =========================
+
+# ---------- Environment ----------
+.env
+.env.*
+!.env.example
+
+# ---------- OS ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# ---------- IDE ----------
+.idea/
+.vscode/
+*.iml
+*.code-workspace
+
+# ---------- Flutter / Dart ----------
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.dart.js
+*.js_
+*.js.deps
+*.js.map
+.pub-cache/
+.pub/
+pubspec.lock
+
+# ---------- Node.js / NestJS ----------
+node_modules/
+dist/
+coverage/
+.nyc_output/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.tsbuildinfo
+
+# ---------- Prisma ----------
+prisma/*.db
+prisma/*.db-journal
+
+# ---------- PostgreSQL ----------
+*.sql.bak
+*.dump
+
+# ---------- Build / Cache ----------
+*.log
+tmp/
+temp/
+.cache/
+
+# ---------- Firebase ----------
+firebase-debug.log
+.firebase/
+
+# ---------- Test ----------
+coverage/
+*.lcov
+
+# ---------- Docker ----------
+docker-compose.override.yml
