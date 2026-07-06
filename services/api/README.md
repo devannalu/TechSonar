@@ -104,6 +104,27 @@ services/api/
 └── package.json
 ```
 
+## Database Schema
+
+O schema inicial do banco foi criado com Prisma e PostgreSQL.
+
+Entidades principais:
+- User
+- UserProfile
+- OrganizerProfile
+- OrganizerMember
+- Event
+- Registration
+- Ticket
+- Payment
+- PaymentWebhookLog
+- Coupon
+- Checkin
+- Feedback
+- Certificate
+- Notification
+- AuditLog
+
 ## Próximos módulos
 
 1. Autenticação (registro, login, JWT)

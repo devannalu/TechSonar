@@ -10,6 +10,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ==========================================================
+// Enums
+// ==========================================================
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+  DELETED
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
 enum OrganizerProfileType {
   COMMUNITY
   COMPANY
@@ -19,6 +36,17 @@ enum OrganizerProfileType {
   COLLECTIVE
   INDEPENDENT_ORGANIZER
   OTHER
+}
+
+enum OrganizerMemberRole {
+  OWNER
+  ADMIN
+  EVENT_MANAGER
+  CHECKIN_STAFF
+  FINANCE_MANAGER
+  CERTIFICATE_MANAGER
+  ANALYTICS_VIEWER
+  SUPPORT
 }
 
 enum EventStatus {
@@ -45,6 +73,13 @@ enum RegistrationStatus {
   REFUNDED
 }
 
+enum TicketStatus {
+  ACTIVE
+  USED
+  CANCELED
+  EXPIRED
+}
+
 enum PaymentStatus {
   PENDING
   PAID
@@ -53,4 +88,502 @@ enum PaymentStatus {
   REFUNDED
   PARTIALLY_REFUNDED
   CHARGEBACK
+}
+
+enum PaymentMethod {
+  FREE
+  PIX
+  CREDIT_CARD
+  BOLETO
+}
+
+enum CouponType {
+  PERCENTAGE
+  FIXED_AMOUNT
+  FREE_TICKET
+}
+
+enum CheckinMethod {
+  QR_CODE
+  MANUAL
+}
+
+enum CertificateStatus {
+  PENDING
+  ISSUED
+  SENT
+  REVOKED
+}
+
+enum NotificationType {
+  REGISTRATION_CONFIRMED
+  PAYMENT_CONFIRMED
+  PAYMENT_FAILED
+  EVENT_REMINDER
+  PRESENCE_CONFIRMATION
+  EVENT_UPDATED
+  EVENT_CANCELED
+  FEEDBACK_AVAILABLE
+  CERTIFICATE_AVAILABLE
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  READ
+  FAILED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  REGISTER_EVENT
+  CANCEL_REGISTRATION
+  CHECKIN
+  MANUAL_CHECKIN
+  ISSUE_CERTIFICATE
+  REVOKE_CERTIFICATE
+  CREATE_PAYMENT
+  REFUND_PAYMENT
+}
+
+// ==========================================================
+// Models
+// ==========================================================
+
+model User {
+  id              String     @id @default(uuid())
+  name            String
+  email           String     @unique
+  passwordHash    String?
+  role            UserRole   @default(USER)
+  status          UserStatus @default(ACTIVE)
+  emailVerifiedAt DateTime?
+
+  profile                UserProfile?
+  ownedOrganizerProfiles OrganizerProfile[] @relation("OrganizerProfileOwner")
+  organizerMemberships   OrganizerMember[]
+  registrations          Registration[]
+  checkins               Checkin[]
+  feedbacks              Feedback[]
+  certificates           Certificate[]
+  notifications          Notification[]
+  auditLogs              AuditLog[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("users")
+}
+
+model UserProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  displayName String?
+  username    String?   @unique
+  phone       String?
+  cpf         String?   @unique
+  birthDate   DateTime?
+  avatarUrl   String?
+  bio         String?
+  city        String?
+  state       String?
+  country     String?   @default("Brasil")
+
+  notifyEmail Boolean @default(true)
+  notifyPush  Boolean @default(true)
+  isPublic    Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_profiles")
+}
+
+model OrganizerProfile {
+  id          String               @id @default(uuid())
+  ownerId     String
+  type        OrganizerProfileType
+  name        String
+  slug        String               @unique
+  description String?
+  logoUrl     String?
+  bannerUrl   String?
+  city        String?
+  state       String?
+  country     String?              @default("Brasil")
+  website     String?
+  instagram   String?
+  linkedin    String?
+  email       String?
+  phone       String?
+  isVerified  Boolean              @default(false)
+  isActive    Boolean              @default(true)
+
+  owner     User              @relation("OrganizerProfileOwner", fields: [ownerId], references: [id])
+  members   OrganizerMember[]
+  events    Event[]
+  coupons   Coupon[]
+  auditLogs AuditLog[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([ownerId])
+  @@index([type])
+  @@index([isActive])
+  @@map("organizer_profiles")
+}
+
+model OrganizerMember {
+  id                 String              @id @default(uuid())
+  organizerProfileId String
+  userId             String
+  role               OrganizerMemberRole @default(EVENT_MANAGER)
+  permissions        String[]            @default([])
+  isActive           Boolean             @default(true)
+  invitedAt          DateTime?
+  joinedAt           DateTime?
+
+  organizerProfile OrganizerProfile @relation(fields: [organizerProfileId], references: [id], onDelete: Cascade)
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizerProfileId, userId])
+  @@index([organizerProfileId])
+  @@index([userId])
+  @@index([role])
+  @@map("organizer_members")
+}
+
+model Event {
+  id                 String @id @default(uuid())
+  organizerProfileId String
+
+  title       String
+  slug        String
+  description String?
+  category    String?
+  format      EventFormat
+  status      EventStatus @default(DRAFT)
+
+  startDateTime DateTime
+  endDateTime   DateTime?
+  timezone      String?   @default("America/Bahia")
+
+  locationName String?
+  address      String?
+  city         String?
+  state        String?
+  country      String? @default("Brasil")
+  onlineUrl    String?
+
+  capacity       Int
+  availableSpots Int?
+  price          Decimal @default(0) @db.Decimal(10, 2)
+  isFree         Boolean @default(true)
+
+  hasCertificate  Boolean   @default(true)
+  checkinStartsAt DateTime?
+  checkinEndsAt   DateTime?
+
+  bannerUrl String?
+
+  organizerProfile OrganizerProfile @relation(fields: [organizerProfileId], references: [id])
+
+  registrations Registration[]
+  tickets       Ticket[]
+  payments      Payment[]
+  coupons       Coupon[]
+  checkins      Checkin[]
+  feedbacks     Feedback[]
+  certificates  Certificate[]
+  auditLogs     AuditLog[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@unique([organizerProfileId, slug])
+  @@index([organizerProfileId])
+  @@index([status])
+  @@index([format])
+  @@index([startDateTime])
+  @@index([city, state])
+  @@map("events")
+}
+
+model Registration {
+  id      String             @id @default(uuid())
+  userId  String
+  eventId String
+  status  RegistrationStatus @default(CONFIRMED)
+
+  confirmedPresence Boolean?
+  registeredAt      DateTime  @default(now())
+  canceledAt        DateTime?
+
+  user  User  @relation(fields: [userId], references: [id])
+  event Event @relation(fields: [eventId], references: [id])
+
+  ticket      Ticket?
+  payment     Payment?
+  checkin     Checkin?
+  certificate Certificate?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Feedback  Feedback?
+
+  @@unique([userId, eventId])
+  @@index([userId])
+  @@index([eventId])
+  @@index([status])
+  @@map("registrations")
+}
+
+model Ticket {
+  id             String       @id @default(uuid())
+  registrationId String       @unique
+  eventId        String
+  code           String       @unique
+  status         TicketStatus @default(ACTIVE)
+  ticketType     String?
+  pricePaid      Decimal      @default(0) @db.Decimal(10, 2)
+
+  registration Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  event        Event        @relation(fields: [eventId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventId])
+  @@index([status])
+  @@map("tickets")
+}
+
+model Payment {
+  id             String  @id @default(uuid())
+  registrationId String? @unique
+  eventId        String
+  userId         String?
+
+  provider          String        @default("pagarme")
+  providerPaymentId String?
+  status            PaymentStatus @default(PENDING)
+  method            PaymentMethod
+  amount            Decimal       @db.Decimal(10, 2)
+  discountAmount    Decimal       @default(0) @db.Decimal(10, 2)
+  refundedAmount    Decimal       @default(0) @db.Decimal(10, 2)
+  currency          String        @default("BRL")
+
+  pixQrCode      String?
+  pixCopyPaste   String?
+  cardLastDigits String?
+  paidAt         DateTime?
+  canceledAt     DateTime?
+  refundedAt     DateTime?
+
+  registration Registration? @relation(fields: [registrationId], references: [id])
+  event        Event         @relation(fields: [eventId], references: [id])
+
+  webhookLogs PaymentWebhookLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventId])
+  @@index([userId])
+  @@index([status])
+  @@index([providerPaymentId])
+  @@map("payments")
+}
+
+model PaymentWebhookLog {
+  id        String  @id @default(uuid())
+  paymentId String?
+
+  provider      String    @default("pagarme")
+  eventType     String
+  payload       Json
+  receivedAt    DateTime  @default(now())
+  processedAt   DateTime?
+  processStatus String?
+  errorMessage  String?
+
+  payment Payment? @relation(fields: [paymentId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([paymentId])
+  @@index([eventType])
+  @@index([receivedAt])
+  @@map("payment_webhook_logs")
+}
+
+model Coupon {
+  id                 String  @id @default(uuid())
+  organizerProfileId String
+  eventId            String?
+
+  name       String
+  code       String
+  type       CouponType
+  value      Decimal    @db.Decimal(10, 2)
+  usageLimit Int?
+  usageCount Int        @default(0)
+  startsAt   DateTime?
+  expiresAt  DateTime?
+  isActive   Boolean    @default(true)
+
+  organizerProfile OrganizerProfile @relation(fields: [organizerProfileId], references: [id])
+  event            Event?           @relation(fields: [eventId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizerProfileId, code])
+  @@index([organizerProfileId])
+  @@index([eventId])
+  @@index([isActive])
+  @@map("coupons")
+}
+
+model Checkin {
+  id             String        @id @default(uuid())
+  registrationId String        @unique
+  eventId        String
+  userId         String
+  method         CheckinMethod @default(QR_CODE)
+  checkedInAt    DateTime      @default(now())
+  validatedById  String?
+  notes          String?
+
+  registration Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  event        Event        @relation(fields: [eventId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([eventId])
+  @@index([userId])
+  @@index([method])
+  @@map("checkins")
+}
+
+model Feedback {
+  id             String @id @default(uuid())
+  registrationId String @unique
+  eventId        String
+  userId         String
+
+  overallRating      Int
+  contentRating      Int?
+  organizationRating Int?
+  speakerRating      Int?
+  positiveComment    String?
+  improvementComment String?
+  wouldRecommend     Boolean?
+
+  registration Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  event        Event        @relation(fields: [eventId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventId])
+  @@index([userId])
+  @@map("feedbacks")
+}
+
+model Certificate {
+  id             String @id @default(uuid())
+  registrationId String @unique
+  eventId        String
+  userId         String
+
+  validationCode   String            @unique
+  status           CertificateStatus @default(PENDING)
+  participantName  String
+  eventTitle       String
+  organizerName    String
+  hours            Int?
+  pdfUrl           String?
+  issuedAt         DateTime?
+  sentAt           DateTime?
+  revokedAt        DateTime?
+  revocationReason String?
+
+  registration Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  event        Event        @relation(fields: [eventId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventId])
+  @@index([userId])
+  @@index([status])
+  @@map("certificates")
+}
+
+model Notification {
+  id     String             @id @default(uuid())
+  userId String
+  type   NotificationType
+  status NotificationStatus @default(PENDING)
+
+  title   String
+  message String
+  data    Json?
+
+  sentAt DateTime?
+  readAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id                 String      @id @default(uuid())
+  userId             String?
+  organizerProfileId String?
+  eventId            String?
+  action             AuditAction
+  entity             String?
+  entityId           String?
+  metadata           Json?
+  ipAddress          String?
+  userAgent          String?
+
+  user             User?             @relation(fields: [userId], references: [id])
+  organizerProfile OrganizerProfile? @relation(fields: [organizerProfileId], references: [id])
+  event            Event?            @relation(fields: [eventId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([organizerProfileId])
+  @@index([eventId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
 }
